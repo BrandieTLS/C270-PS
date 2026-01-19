@@ -42,25 +42,29 @@ def main():
 
     return render_template("index.html", gallery=gallery)
 
+@sample.route("/add", methods=["GET"])
+def add_page():
+    return render_template("Add.html")
+
+
 @sample.route("/upload", methods=["POST"])
 def upload():
-    files = request.files.getlist("images")   
+    files = request.files.getlist("images")
     if not files:
         return redirect("/")
+
     images = session.get("images", [])
+
     for file in files:
         if not file or file.filename == "":
             continue
         filename = file.filename
         file.save("static/uploads/" + filename)
         images.append(filename)
-    try:
-        open("static/uploads/" + filename)
-        
-    except:
-        pass
+
     session["images"] = images
     return redirect("/")
+
 
 
 if __name__ == "__main__":
