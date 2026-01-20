@@ -11,13 +11,7 @@ sample = Flask(__name__)
 sample.secret_key = "123"
 
 UPLOAD_FOLDER = "uploads"
-
-@sample.before_request
-def clear_once_per_start():
-    if not sample.config["CLEARED_ON_START"]:
-        session.clear()
-        sample.config["CLEARED_ON_START"] = True
-        
+       
 @sample.route("/uploads/<filename>")
 def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
