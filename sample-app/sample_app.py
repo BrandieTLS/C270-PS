@@ -11,10 +11,14 @@ sample = Flask(__name__)
 sample.secret_key = "123"
 
 UPLOAD_FOLDER = "uploads"
-       
+@sample.route("/", methods=["GET"])
+def home():
+    return main()
+
 @sample.route("/uploads/<filename>")
 def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
+
 
 def main():
     images = session.get("images", [])
@@ -31,7 +35,7 @@ def main():
         for img in images:
             gallery = gallery + (
                 '<div class="card">'
-                '<img src="/static/uploads/' + img + '">'
+                '<img src="/uploads/' + img + '">'
                 '</div>'
             )
 
