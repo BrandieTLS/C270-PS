@@ -4,13 +4,13 @@ from flask import request
 from flask import render_template
 from flask import redirect
 from flask import session
-
-
+from flask import send_from_directory
 
 
 sample = Flask(__name__)
 sample.secret_key = "123"
-sample.config["CLEARED_ON_START"] = False
+
+UPLOAD_FOLDER = "uploads"
 
 @sample.before_request
 def clear_once_per_start():
@@ -18,7 +18,10 @@ def clear_once_per_start():
         session.clear()
         sample.config["CLEARED_ON_START"] = True
         
-@sample.route("/")
+@sample.route("/uploads/<filename>")
+def uploaded_file(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
+
 def main():
     images = session.get("images", [])
     count = len(images)
@@ -59,7 +62,7 @@ def upload():
         if not file or file.filename == "":
             continue
         filename = file.filename
-        file.save("static/uploads/" + filename)
+        file.save("uploads/" + filename)
         images.append(filename)
 
     session["images"] = images
