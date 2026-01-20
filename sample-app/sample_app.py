@@ -11,9 +11,25 @@ sample = Flask(__name__)
 sample.secret_key = "123"
 
 UPLOAD_FOLDER = "uploads"
+
+IMAGES_DB = "uploads/images.txt"
+
+def load_images():
+    try:
+        with open(IMAGES_DB, "r") as f:
+            return [line.strip() for line in f if line.strip()]
+    except FileNotFoundError:
+        return []
+
+def save_images(images):
+    with open(IMAGES_DB, "w") as f:
+        for img in images:
+            f.write(img + "\n")
+
 @sample.route("/", methods=["GET"])
 def home():
     return main()
+
 
 @sample.route("/uploads/<filename>")
 def uploaded_file(filename):
@@ -21,7 +37,7 @@ def uploaded_file(filename):
 
 
 def main():
-    images = session.get("images", [])
+    images = load_images()
     count = len(images)
     
     gallery = ""
@@ -54,16 +70,16 @@ def upload():
     if not files:
         return redirect("/")
 
-    images = session.get("images", [])
+    images = load_images()
 
     for file in files:
         if not file or file.filename == "":
             continue
         filename = file.filename
-        file.save("uploads/" + filename)
+        file.save(UPLOAD_FOLDER + "/" + filename)
         images.append(filename)
 
-    session["images"] = images
+    save_images(images)
     return redirect("/")
 
 
